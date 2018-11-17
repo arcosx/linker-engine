@@ -6,8 +6,8 @@ class CardsAppConfig(AppConfig):
     label = 'cards'
     verbose_name = 'Cards'
 
-    def ready(self):
-        import linker.apps.cards.signals
+    # def ready(self):
+    #     import linker.apps.cards.signals
 
 
 default_app_config = 'linker.apps.cards.CardsAppConfig'

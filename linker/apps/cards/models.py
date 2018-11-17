@@ -4,9 +4,6 @@ from linker.apps.inf.models import TimestampedModel
 
 
 class Card(TimestampedModel):
-    # 删除 slug 和 title
-    # slug = models.SlugField(db_index=True, max_length=255, unique=True)
-    # title = models.CharField(db_index=True, max_length=255)
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     description = models.TextField(blank=True)
     body = models.URLField()
@@ -20,7 +17,7 @@ class Card(TimestampedModel):
     )
 
     def __str__(self):
-        return self.title
+        return self.uuid
 
 
 class Comment(TimestampedModel):

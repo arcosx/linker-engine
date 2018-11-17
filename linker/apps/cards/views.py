@@ -16,7 +16,7 @@ class CardViewSet(mixins.CreateModelMixin,
                      mixins.RetrieveModelMixin,
                      viewsets.GenericViewSet):
 
-    lookup_field = 'slug'
+    lookup_field = 'uuid'
     queryset = Card.objects.select_related('author', 'author__user')
     permission_classes = (IsAuthenticatedOrReadOnly,)
     renderer_classes = (CardJSONRenderer,)
@@ -69,13 +69,13 @@ class CardViewSet(mixins.CreateModelMixin,
 
         return self.get_paginated_response(serializer.data)
 
-    def retrieve(self, request, slug):
+    def retrieve(self, request, uuid):
         serializer_context = {'request': request}
 
         try:
-            serializer_instance = self.queryset.get(slug=slug)
+            serializer_instance = self.queryset.get(uuid=uuid)
         except Card.DoesNotExist:
-            raise NotFound('An card with this slug does not exist.')
+            raise NotFound('An card with this uuid does not exist.')
 
         serializer = self.serializer_class(
             serializer_instance,
@@ -85,13 +85,13 @@ class CardViewSet(mixins.CreateModelMixin,
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-    def update(self, request, slug):
+    def update(self, request, uuid):
         serializer_context = {'request': request}
 
         try:
-            serializer_instance = self.queryset.get(slug=slug)
+            serializer_instance = self.queryset.get(uuid=uuid)
         except Card.DoesNotExist:
-            raise NotFound('An card with this slug does not exist.')
+            raise NotFound('An card with this uuid does not exist.')
             
         serializer_data = request.data.get('card', {})
 
@@ -108,8 +108,8 @@ class CardViewSet(mixins.CreateModelMixin,
 
 
 class CommentsListCreateAPIView(generics.ListCreateAPIView):
-    lookup_field = 'card__slug'
-    lookup_url_kwarg = 'card_slug'
+    lookup_field = 'card__uuid'
+    lookup_url_kwarg = 'card_uuid'
     permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Comment.objects.select_related(
         'card', 'card__author', 'card__author__user',
@@ -123,14 +123,14 @@ class CommentsListCreateAPIView(generics.ListCreateAPIView):
 
         return queryset.filter(**filters)
 
-    def create(self, request, card_slug=None):
+    def create(self, request, card_uuid=None):
         data = request.data.get('comment', {})
         context = {'author': request.user.profile}
 
         try:
-            context['card'] = Card.objects.get(slug=card_slug)
+            context['card'] = Card.objects.get(uuid=card_uuid)
         except Card.DoesNotExist:
-            raise NotFound('An card with this slug does not exist.')
+            raise NotFound('An card with this uuid does not exist.')
 
         serializer = self.serializer_class(data=data, context=context)
         serializer.is_valid(raise_exception=True)
@@ -144,7 +144,7 @@ class CommentsDestroyAPIView(generics.DestroyAPIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
     queryset = Comment.objects.all()
 
-    def destroy(self, request, card_slug=None, comment_pk=None):
+    def destroy(self, request, card_uuid=None, comment_pk=None):
         try:
             comment = Comment.objects.get(pk=comment_pk)
         except Comment.DoesNotExist:
@@ -160,14 +160,14 @@ class CardsFavoriteAPIView(APIView):
     renderer_classes = (CardJSONRenderer,)
     serializer_class = CardSerializer
 
-    def delete(self, request, card_slug=None):
+    def delete(self, request, card_uuid=None):
         profile = self.request.user.profile
         serializer_context = {'request': request}
 
         try:
-            card = Card.objects.get(slug=card_slug)
+            card = Card.objects.get(uuid=card_uuid)
         except Card.DoesNotExist:
-            raise NotFound('An card with this slug was not found.')
+            raise NotFound('An card with this uuid was not found.')
 
         profile.unfavorite(card)
 
@@ -175,14 +175,14 @@ class CardsFavoriteAPIView(APIView):
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def post(self, request, card_slug=None):
+    def post(self, request, card_uuid=None):
         profile = self.request.user.profile
         serializer_context = {'request': request}
 
         try:
-            card = Card.objects.get(slug=card_slug)
+            card = Card.objects.get(uuid=card_uuid)
         except Card.DoesNotExist:
-            raise NotFound('An card with this slug was not found.')
+            raise NotFound('An card with this uuid was not found.')
 
         profile.favorite(card)
 

@@ -9,7 +9,6 @@ from .relations import TagRelatedField
 class CardSerializer(serializers.ModelSerializer):
     author = ProfileSerializer(read_only=True)
     description = serializers.CharField(required=False)
-    # slug = serializers.SlugField(required=False)
     uuid = serializers.UUIDField(required=False)
     favorited = serializers.SerializerMethodField()
     favoritesCount = serializers.SerializerMethodField(
@@ -17,7 +16,6 @@ class CardSerializer(serializers.ModelSerializer):
     )
 
     tagList = TagRelatedField(many=True, required=False, source='tags')
-
 
     createdAt = serializers.SerializerMethodField(method_name='get_created_at')
     updatedAt = serializers.SerializerMethodField(method_name='get_updated_at')
@@ -31,10 +29,8 @@ class CardSerializer(serializers.ModelSerializer):
             'description',
             'favorited',
             'favoritesCount',
-            # 'slug',
-            'uuid'
+            'uuid',
             'tagList',
-            'title',
             'updatedAt',
         )
 
