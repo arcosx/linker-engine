@@ -13,6 +13,7 @@ pytz = "==2018.7"
 six = "==1.11.0"
 mysqlclient = "*"
 pillow = "*"
+django-jet = "*"
 
 [dev-packages]
 

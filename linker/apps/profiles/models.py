@@ -45,3 +45,7 @@ class Profile(TimestampedModel):
 
     def has_favorited(self, card):
         return self.favorites.filter(pk=card.pk).exists()
+
+    @property
+    def theusername(self):
+        return self.user.username

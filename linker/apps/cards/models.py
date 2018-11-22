@@ -16,6 +16,10 @@ class Card(TimestampedModel):
         'cards.Tag', related_name='cards'
     )
 
+    @property
+    def get_uuid(self):
+        return self.uuid
+
     def __str__(self):
         return self.uuid
 
@@ -30,7 +34,8 @@ class Comment(TimestampedModel):
     author = models.ForeignKey(
         'profiles.Profile', related_name='comments', on_delete=models.CASCADE
     )
-
+    def __str__(self):
+        return self.body
 
 class Tag(TimestampedModel):
     tag = models.CharField(max_length=255)

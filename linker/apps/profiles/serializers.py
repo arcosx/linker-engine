@@ -1,5 +1,7 @@
 from rest_framework import serializers
+from rest_framework.fields import UUIDField
 
+from linker.apps.authentication.models import User
 from .models import Profile
 
 
@@ -8,10 +10,20 @@ class ProfileSerializer(serializers.ModelSerializer):
     bio = serializers.CharField(allow_blank=True, required=False)
     image = serializers.SerializerMethodField()
     following = serializers.SerializerMethodField()
+    follows = serializers.SlugRelatedField(
+        many=True,
+        queryset=User.objects.all(),
+        slug_field='theusername'
+    )
+    favorites = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='body',
+     )
 
     class Meta:
         model = Profile
-        fields = ('username', 'bio', 'image', 'following',)
+        fields = ('username', 'bio', 'image', 'following', 'follows','favorites')
         read_only_fields = ('username',)
 
     def get_image(self, obj):
